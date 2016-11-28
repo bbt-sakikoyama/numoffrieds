@@ -9,53 +9,44 @@ friends = [
     ]
 
 
-def recursion_depth():
-    def execute(fIndex, friend, times=0):
-        _times = times + 1
-        for hIndex, human in enumerate(friend):
-            # 再帰時にhuman自身をfriendとしてカウントさせない
-            if human == 'Y' and fIndex != hIndex:
-                # 再帰は1回だけ
-                if _times < 2:
-                    for tpl in execute(fIndex, friends[hIndex], _times):
-                        yield tpl
-                yield (fIndex, hIndex)
+class Human(object):
+    def __init__(self, index):
+        self.index = index,
+        self.friends = set()
 
-    for fIndex, friend in enumerate(friends):
-        yield list(execute(fIndex, friend))
+    def get_index(self):
+        return self.index[0]
+
+    def get_friends_num(self):
+        return len(self.friends)
+
+
+def recursion_depth(friends, maxtimes=2):
+    def recusion(human, items, times=0):
+        times += 1
+        for i, h in enumerate(items):
+            if h == 'Y' and human.get_index() != i and times <= maxtimes:
+                human.friends.add(i)
+                recusion(human, friends[i], times)
+        return human
+
+    for index, items in enumerate(friends):
+        yield recusion(Human(index), items).get_friends_num()
 
 
 def recursion_width():
-    def execute(friends, times=0):
-        _times = times + 1
-        _friendsList = []
-        for fIndex, friend in enumerate(friends):
-            _friends = []
-            for hIndex, human in enumerate(friend):
-                if human == 'Y' and fIndex != hIndex:
-                    if _times < 2:
-                        _friends.append(friends[hIndex])
-                    yield (fIndex, hIndex)
-            _friendsList.append(_friends)
-
-        for fs in _friendsList:
-            for tpl in execute(fs, _times):
-                yield tpl
-
-    return set(execute(friends))
 
 
-def depth():
+def roop_depth():
     pass
 
 
-def width():
+def roop_width():
     pass
 
 
 def main():
-    print list(recursion_depth())
-    print recursion_width()
+    print max(list(recursion_depth(friends)))
 
 
 if __name__ == '__main__':
